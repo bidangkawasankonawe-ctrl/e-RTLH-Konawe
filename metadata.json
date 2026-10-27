@@ -1,0 +1,6 @@
+{
+  "name": "SIM-RTLH Konawe - Sistem Pendataan Rumah Tidak Layak Huni",
+  "description": "Sistem Informasi Pendataan, Verifikasi Lapangan, Pemetaan GIS, dan Monitoring RTLH terintegrasi Google Form & Spreadsheet.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
