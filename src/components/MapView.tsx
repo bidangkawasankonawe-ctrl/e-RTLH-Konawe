@@ -208,11 +208,11 @@ export const MapView: React.FC<MapViewProps> = ({
       {/* Map Control Bar */}
       <div className="bg-white p-3.5 rounded-2xl border border-slate-200 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex items-center space-x-2">
-          <div className="p-2 rounded-xl bg-emerald-100 text-emerald-800">
+          <div className="p-2 rounded-xl bg-blue-100 text-blue-800 border border-blue-200/60 shadow-2xs">
             <MapPin className="w-4 h-4" />
           </div>
           <div>
-            <h3 className="font-bold text-slate-900 text-sm">
+            <h3 className="font-extrabold text-slate-900 text-sm">
               Geospasial GIS Sebaran RTLH Kab. Konawe
             </h3>
             <p className="text-[11px] text-slate-500">
@@ -229,7 +229,7 @@ export const MapView: React.FC<MapViewProps> = ({
             <select
               value={filterKecamatan}
               onChange={(e) => handleKecamatanChange(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               {KONAWE_KECAMATAN.map((k) => (
                 <option key={k} value={k}>{k}</option>
@@ -243,7 +243,7 @@ export const MapView: React.FC<MapViewProps> = ({
             <select
               value={filterKerusakan}
               onChange={(e) => setFilterKerusakan(e.target.value)}
-              className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-emerald-500"
+              className="bg-slate-50 border border-slate-200 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
             >
               <option value="Semua Kategori">Semua Kategori</option>
               <option value="Rusak Berat">Rusak Berat (Merah)</option>

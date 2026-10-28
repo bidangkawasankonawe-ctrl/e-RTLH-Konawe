@@ -40,16 +40,16 @@ export const GoogleFormEmbedModal: React.FC<GoogleFormEmbedModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-4xl w-full border border-slate-200 overflow-hidden flex flex-col h-[88vh]">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-[#081E3D] text-white px-6 py-4 flex items-center justify-between border-b border-blue-900/60">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-indigo-500/20 text-indigo-400 border border-indigo-500/30">
+            <div className="p-2 rounded-xl bg-blue-500/20 text-amber-300 border border-blue-400/30">
               <FileText className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">
+              <h3 className="font-extrabold text-base text-white">
                 Instrumen Survei Google Form RTLH
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-blue-200/80">
                 Kuesioner digital pendataan RTLH langsung dari petugas verifikator lapangan
               </p>
             </div>
@@ -61,7 +61,7 @@ export const GoogleFormEmbedModal: React.FC<GoogleFormEmbedModalProps> = ({
                 href={formUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold transition"
+                className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold transition shadow-xs"
               >
                 <span>Buka di Tab Baru</span>
                 <ExternalLink className="w-3.5 h-3.5" />
@@ -69,7 +69,7 @@ export const GoogleFormEmbedModal: React.FC<GoogleFormEmbedModalProps> = ({
             )}
             <button
               onClick={onClose}
-              className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+              className="p-1.5 rounded-lg bg-blue-900/60 hover:bg-blue-800 text-blue-200 hover:text-white transition cursor-pointer"
             >
               <X className="w-5 h-5" />
             </button>
@@ -77,9 +77,9 @@ export const GoogleFormEmbedModal: React.FC<GoogleFormEmbedModalProps> = ({
         </div>
 
         {/* Sync Tip Banner */}
-        <div className="bg-emerald-50 px-6 py-2.5 border-b border-emerald-200 text-xs text-emerald-900 flex items-center justify-between">
+        <div className="bg-blue-50 px-6 py-2.5 border-b border-blue-200 text-xs text-blue-950 flex items-center justify-between">
           <div className="flex items-center space-x-2">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600 flex-shrink-0" />
+            <CheckCircle2 className="w-4 h-4 text-blue-600 flex-shrink-0" />
             <span>
               <strong>Alur Kerja:</strong> Setelah selesai mengisi dan klik "Kirim" pada Google Form, data akan otomatis masuk ke Google Sheet Anda. Klik tombol <strong>Sinkronkan Sekarang</strong> di kanan untuk memuatnya ke tabel BNBA.
             </span>
@@ -89,7 +89,7 @@ export const GoogleFormEmbedModal: React.FC<GoogleFormEmbedModalProps> = ({
               onTriggerSync();
               onClose();
             }}
-            className="ml-3 px-3 py-1 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold whitespace-nowrap shadow-sm text-xs flex items-center gap-1"
+            className="ml-3 px-3 py-1 rounded-lg bg-blue-600 hover:bg-blue-700 text-white font-bold whitespace-nowrap shadow-sm text-xs flex items-center gap-1 cursor-pointer"
           >
             <RefreshCw className="w-3 h-3" />
             <span>Sinkronkan Sekarang</span>

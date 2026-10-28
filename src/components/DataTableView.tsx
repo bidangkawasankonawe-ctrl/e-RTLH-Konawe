@@ -2,6 +2,7 @@ import React, { useState, useMemo } from 'react';
 import { RTLHEntry, KerusakanLevel, StatusBantuan } from '../types/rtlh';
 import { KONAWE_KECAMATAN } from '../data/sampleKonaweData';
 import { formatGoogleDriveImageUrl } from '../utils/googleSheetsSync';
+import { maskIdentity, UserRole } from '../utils/privacyMask';
 import { 
   Search, 
   Download, 
@@ -16,7 +17,12 @@ import {
   Check,
   X,
   FileSpreadsheet,
-  Image as ImageIcon
+  Image as ImageIcon,
+  ShieldCheck,
+  Lock,
+  Unlock,
+  CheckCircle2,
+  RefreshCw
 } from 'lucide-react';
 
 interface DataTableViewProps {
@@ -26,6 +32,10 @@ interface DataTableViewProps {
   onDeleteEntry: (id: string) => void;
   onOpenNewEntry: () => void;
   onExportCsv: () => void;
+  initialKecamatan?: string;
+  initialStatus?: string;
+  userRole?: UserRole;
+  onToggleUserRole?: (role: UserRole) => void;
 }
 
 export const DataTableView: React.FC<DataTableViewProps> = ({
@@ -35,10 +45,16 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
   onDeleteEntry,
   onOpenNewEntry,
   onExportCsv,
+  initialKecamatan,
+  initialStatus,
+  userRole = 'Super Admin',
+  onToggleUserRole,
 }) => {
+  const isSuperAdmin = userRole === 'Super Admin';
   // Global search & filters
   const [searchTerm, setSearchTerm] = useState('');
-  const [filterKecamatan, setFilterKecamatan] = useState('Semua');
+  const [filterKecamatan, setFilterKecamatan] = useState(initialKecamatan || 'Semua');
+  const [filterStatus, setFilterStatus] = useState(initialStatus || 'Semua');
   const [filterDesa, setFilterDesa] = useState('Semua');
   const [selectedCell, setSelectedCell] = useState<{ rowIdx: number; colKey: string } | null>({ rowIdx: 6, colKey: 'alamat' });
   const [activePhotoModal, setActivePhotoModal] = useState<{ url: string; title: string } | null>(null);
@@ -83,10 +99,11 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
 
       const matchKec = filterKecamatan === 'Semua' || item.kecamatan === filterKecamatan;
       const matchDesa = filterDesa === 'Semua' || item.desaKelurahan === filterDesa;
+      const matchStatus = filterStatus === 'Semua' || item.statusBantuan === filterStatus;
 
-      return matchSearch && matchKec && matchDesa;
+      return matchSearch && matchKec && matchDesa && matchStatus;
     });
-  }, [data, searchTerm, filterKecamatan, filterDesa]);
+  }, [data, searchTerm, filterKecamatan, filterDesa, filterStatus]);
 
   const totalPages = Math.ceil(filteredData.length / pageSize) || 1;
   const paginatedData = useMemo(() => {
@@ -143,8 +160,58 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
   return (
     <div className="space-y-3 font-sans">
       
+      {/* Privacy Notice & Role Mode Banner */}
+      <div 
+        style={{ backgroundColor: '#2049af' }}
+        className="border border-blue-800 p-3 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-2xs text-white"
+      >
+        <div className="flex items-center space-x-2.5">
+          <div className={`p-1.5 rounded-lg shrink-0 ${isSuperAdmin ? 'bg-blue-600 text-white' : 'bg-amber-400 text-slate-900'}`}>
+            {isSuperAdmin ? <ShieldCheck className="w-4 h-4" /> : <Lock className="w-4 h-4" />}
+          </div>
+          <div className="text-xs">
+            <span className="font-bold text-white">
+              {isSuperAdmin ? 'Mode Akses: Super Admin (Akses Penuh)' : 'Mode Akses: User Publik / Tamu (NIK Disamarkan)'}
+            </span>
+            <p className="text-blue-100 text-[11px] mt-0.5">
+              {isSuperAdmin 
+                ? 'NIK & No KK ditampilkan lengkap untuk verifikasi. Kolom Nama KK & Desa/Kelurahan tersinkronisasi otomatis dari Spreadsheet.'
+                : 'Sesuai regulasi UU Pelindungan Data Pribadi (UU PDP), NIK dan Nomor KK disamarkan (misal: 740205******0004) bagi umum.'}
+            </p>
+          </div>
+        </div>
+
+        {onToggleUserRole && (
+          <div className="flex items-center gap-1.5 shrink-0 self-start sm:self-auto">
+            <span className="text-[11px] text-blue-200 font-medium">Uji Peran:</span>
+            <div className="inline-flex rounded-lg border border-blue-400/40 p-0.5 bg-blue-950/40 text-xs">
+              <button
+                type="button"
+                onClick={() => onToggleUserRole('Super Admin')}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                  isSuperAdmin ? 'bg-white text-[#2049af] shadow-xs' : 'text-blue-200 hover:text-white'
+                }`}
+              >
+                <ShieldCheck className="w-3 h-3" />
+                <span>Super Admin</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => onToggleUserRole('User Publik')}
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold transition flex items-center gap-1 cursor-pointer ${
+                  !isSuperAdmin ? 'bg-amber-400 text-slate-900 shadow-xs' : 'text-blue-200 hover:text-white'
+                }`}
+              >
+                <Lock className="w-3 h-3" />
+                <span>User Publik</span>
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
       {/* Top Toolbar */}
-      <div className="bg-white p-3 rounded-xl border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="bg-white p-3.5 rounded-xl border border-slate-300 shadow-sm flex flex-col md:flex-row md:items-center md:justify-between gap-3">
         <div className="flex flex-wrap items-center gap-2 flex-1">
           {/* Search Input */}
           <div className="relative min-w-[240px] flex-1 max-w-md">
@@ -157,12 +224,12 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
                 setSearchTerm(e.target.value);
                 setCurrentPage(1);
               }}
-              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition"
+              className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-300 rounded-lg focus:bg-white focus:outline-none focus:ring-2 focus:ring-amber-500/20 focus:border-amber-500 transition font-medium"
             />
           </div>
 
           {/* Kecamatan Filter */}
-          <div className="flex items-center space-x-1 text-xs">
+          <div className="flex items-center space-x-1.5 text-xs bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">
             <span className="text-slate-500 font-medium">Kecamatan:</span>
             <select
               value={filterKecamatan}
@@ -171,7 +238,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
                 setFilterDesa('Semua');
                 setCurrentPage(1);
               }}
-              className="bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer"
             >
               {availableKecamatan.map((kec) => (
                 <option key={kec} value={kec}>{kec}</option>
@@ -180,15 +247,15 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
           </div>
 
           {/* Desa Filter */}
-          <div className="flex items-center space-x-1 text-xs">
-            <span className="text-slate-500 font-medium">Desa:</span>
+          <div className="flex items-center space-x-1.5 text-xs bg-slate-50 border border-slate-200 px-2.5 py-1 rounded-lg">
+            <span className="text-slate-500 font-medium">Desa / Kel:</span>
             <select
               value={filterDesa}
               onChange={(e) => {
                 setFilterDesa(e.target.value);
                 setCurrentPage(1);
               }}
-              className="bg-slate-50 border border-slate-300 rounded-lg px-2 py-1 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-amber-500"
+              className="bg-transparent font-bold text-slate-800 focus:outline-none cursor-pointer"
             >
               {availableDesa.map((desa) => (
                 <option key={desa} value={desa}>{desa}</option>
@@ -201,16 +268,16 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
         <div className="flex items-center space-x-2">
           <button
             onClick={onExportCsv}
-            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-800 border border-emerald-300 hover:bg-emerald-100 transition shadow-sm"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold bg-blue-50 text-blue-800 border border-blue-300 hover:bg-blue-100 transition shadow-2xs cursor-pointer"
             title="Download CSV spreadsheet"
           >
-            <Download className="w-3.5 h-3.5 text-emerald-700" />
+            <Download className="w-3.5 h-3.5 text-blue-700" />
             <span>Export Spreadsheet</span>
           </button>
 
           <button
             onClick={onOpenNewEntry}
-            className="inline-flex items-center space-x-1 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#d99b26] hover:bg-[#c4891d] text-white transition shadow-sm"
+            className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-lg text-xs font-bold bg-[#d99b26] hover:bg-[#c4891d] text-white transition shadow-sm cursor-pointer"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Tambah Baris</span>
@@ -227,9 +294,13 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
           </span>
           <span className="text-slate-400">•</span>
           <span>Menampilkan <strong>{filteredData.length}</strong> baris data</span>
+          <span className="text-slate-400">•</span>
+          <span className="text-blue-800 font-semibold bg-blue-50 px-2 py-0.5 rounded-full border border-blue-200 text-[10px]">
+            Desa &amp; Nama Sesuai Spreadsheet
+          </span>
         </div>
         <div className="text-[11px] text-slate-500 hidden sm:block">
-          * Klik sel mana saja untuk menandai, atau klik tautan untuk membuka foto dokumentasi Google Drive.
+          * Klik sel mana saja untuk menandai, atau klik tautan foto untuk pratinjau.
         </div>
       </div>
 
@@ -267,25 +338,42 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
                 </th>
 
                 {/* 4. NIK (KTP) */}
-                <th className="border border-[#c88d22] py-2 px-3 min-w-[140px] whitespace-nowrap">
+                <th className="border border-[#c88d22] py-2 px-3 min-w-[150px] whitespace-nowrap">
                   <div className="flex items-center justify-between space-x-1.5">
-                    <span>NIK (KTP)</span>
+                    <div className="flex items-center space-x-1">
+                      <span>NIK (KTP)</span>
+                      {!isSuperAdmin && (
+                        <span title="Disamarkan untuk User Publik" className="bg-amber-600/60 text-white rounded px-1 py-0.2 text-[9px] font-mono">
+                          Masked
+                        </span>
+                      )}
+                    </div>
                     <Filter className="w-3 h-3 text-white/90 fill-white flex-shrink-0" />
                   </div>
                 </th>
 
                 {/* 5. Nomor KK (Kartu Keluarga) */}
-                <th className="border border-[#c88d22] py-2 px-3 min-w-[140px] whitespace-nowrap">
+                <th className="border border-[#c88d22] py-2 px-3 min-w-[150px] whitespace-nowrap">
                   <div className="flex items-center justify-between space-x-1.5">
-                    <span>Nomor KK (Kartu Keluarga)</span>
+                    <div className="flex items-center space-x-1">
+                      <span>Nomor KK (Kartu Keluarga)</span>
+                      {!isSuperAdmin && (
+                        <span title="Disamarkan untuk User Publik" className="bg-amber-600/60 text-white rounded px-1 py-0.2 text-[9px] font-mono">
+                          Masked
+                        </span>
+                      )}
+                    </div>
                     <Filter className="w-3 h-3 text-white/90 fill-white flex-shrink-0" />
                   </div>
                 </th>
 
                 {/* 6. Desa / Kelurahan */}
-                <th className="border border-[#c88d22] py-2 px-3 min-w-[150px] whitespace-nowrap">
+                <th className="border border-[#c88d22] py-2 px-3 min-w-[150px] whitespace-nowrap bg-[#ce9221]">
                   <div className="flex items-center justify-between space-x-1.5">
-                    <span>Desa / Kelurahan</span>
+                    <div className="flex items-center space-x-1">
+                      <span>Desa / Kelurahan</span>
+                      <span className="text-[9px] bg-emerald-700/60 px-1 rounded text-white font-normal">Sync</span>
+                    </div>
                     <Filter className="w-3 h-3 text-white/90 fill-white flex-shrink-0" />
                   </div>
                 </th>
@@ -406,31 +494,45 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
                       {/* 4. NIK (KTP) */}
                       <td 
                         onClick={() => handleCellClick(idx, 'nik')}
-                        className={`border border-slate-300 py-1.5 px-3 font-mono text-slate-800 text-xs cursor-pointer ${
+                        className={`border border-slate-300 py-1.5 px-3 font-mono text-xs cursor-pointer ${
+                          !isSuperAdmin ? 'text-slate-600 bg-amber-50/20' : 'text-slate-800'
+                        } ${
                           selectedCell?.rowIdx === idx && selectedCell?.colKey === 'nik' ? 'ring-2 ring-blue-600 bg-blue-50/30' : ''
                         }`}
+                        title={isSuperAdmin ? 'NIK Lengkap (Super Admin)' : 'NIK Disamarkan untuk User Publik sesuai UU PDP'}
                       >
-                        {item.nik}
+                        <div className="flex items-center space-x-1.5">
+                          <span>{maskIdentity(item.nik, isSuperAdmin)}</span>
+                          {!isSuperAdmin && <Lock className="w-3 h-3 text-amber-500 shrink-0" />}
+                        </div>
                       </td>
 
                       {/* 5. Nomor KK (Kartu Keluarga) */}
                       <td 
                         onClick={() => handleCellClick(idx, 'noKK')}
-                        className={`border border-slate-300 py-1.5 px-3 font-mono text-slate-800 text-xs cursor-pointer ${
+                        className={`border border-slate-300 py-1.5 px-3 font-mono text-xs cursor-pointer ${
+                          !isSuperAdmin ? 'text-slate-600 bg-amber-50/20' : 'text-slate-800'
+                        } ${
                           selectedCell?.rowIdx === idx && selectedCell?.colKey === 'noKK' ? 'ring-2 ring-blue-600 bg-blue-50/30' : ''
                         }`}
+                        title={isSuperAdmin ? 'Nomor KK Lengkap (Super Admin)' : 'Nomor KK Disamarkan untuk User Publik sesuai UU PDP'}
                       >
-                        {item.noKK}
+                        <div className="flex items-center space-x-1.5">
+                          <span>{maskIdentity(item.noKK, isSuperAdmin)}</span>
+                          {!isSuperAdmin && <Lock className="w-3 h-3 text-amber-500 shrink-0" />}
+                        </div>
                       </td>
 
                       {/* 6. Desa / Kelurahan */}
                       <td 
                         onClick={() => handleCellClick(idx, 'desa')}
-                        className={`border border-slate-300 py-1.5 px-3 font-medium text-slate-800 cursor-pointer ${
+                        className={`border border-slate-300 py-1.5 px-3 font-semibold text-slate-900 cursor-pointer ${
                           selectedCell?.rowIdx === idx && selectedCell?.colKey === 'desa' ? 'ring-2 ring-blue-600 bg-blue-50/30' : ''
                         }`}
                       >
-                        {item.desaKelurahan}
+                        <span className="inline-block px-2 py-0.5 rounded bg-emerald-50 text-emerald-950 font-bold border border-emerald-200/90 text-xs shadow-2xs">
+                          {item.desaKelurahan}
+                        </span>
                       </td>
 
                       {/* 7. Kecamatan */}

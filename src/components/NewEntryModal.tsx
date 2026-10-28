@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { RTLHEntry, KerusakanLevel, StatusBantuan, SumberDana } from '../types/rtlh';
 import { KONAWE_KECAMATAN } from '../data/sampleKonaweData';
 import { calculatePUPRScore } from '../utils/googleSheetsSync';
+import { getDefaultPenilaian } from '../utils/standarPenilaian';
 import { X, Plus, MapPin, Calculator, Camera, Save, Navigation } from 'lucide-react';
 
 interface NewEntryModalProps {
@@ -130,6 +131,8 @@ export const NewEntryModal: React.FC<NewEntryModalProps> = ({
       catatanVerifikator: keteranganFisik,
     };
 
+    newEntry.penilaianStandar = getDefaultPenilaian(newEntry);
+
     onAddEntry(newEntry);
     onClose();
   };
@@ -139,16 +142,16 @@ export const NewEntryModal: React.FC<NewEntryModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-[#081E3D] text-white px-6 py-4 flex items-center justify-between border-b border-blue-900/60">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <div className="p-2 rounded-xl bg-blue-500/20 text-amber-300 border border-blue-400/30">
               <Plus className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">
+              <h3 className="font-extrabold text-base text-white">
                 Input Survei Faktual RTLH Baru
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-blue-200/80">
                 Instrumen pendataan calon penerima bantuan dengan kalkulasi skor PUPR otomatis
               </p>
             </div>
@@ -505,7 +508,7 @@ export const NewEntryModal: React.FC<NewEntryModalProps> = ({
             </button>
             <button
               type="submit"
-              className="px-5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-md shadow-emerald-600/20"
+              className="px-5 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold transition flex items-center gap-1.5 shadow-md shadow-blue-600/20 cursor-pointer"
             >
               <Save className="w-4 h-4" />
               <span>Simpan Usulan Faktual</span>

@@ -235,30 +235,83 @@ export function transformRowsToRTLH(
   columnMap: Record<string, string>
 ): RTLHEntry[] {
   return rows.map((row, index) => {
-    const getValue = (key: string): string => {
+    // Intelligent extractor that checks explicit column mapping, exact keys, and synonyms
+    const getValue = (key: string, synonyms: string[] = []): string => {
+      // 1. Check explicit column mapping
       const colHeader = columnMap[key];
-      if (colHeader && row[colHeader] !== undefined) {
+      if (colHeader && row[colHeader] !== undefined && String(row[colHeader]).trim() !== '') {
         return String(row[colHeader]).trim();
       }
-      // fallback check direct property
-      if (row[key] !== undefined) return String(row[key]).trim();
+
+      // 2. Check exact direct property
+      if (row[key] !== undefined && String(row[key]).trim() !== '') {
+        return String(row[key]).trim();
+      }
+
+      const rowKeys = Object.keys(row);
+      const allSearchKeywords = [...synonyms];
+      const knownDef = KNOWN_COLUMN_MAPPINGS.find(m => m.key === key);
+      if (knownDef) {
+        allSearchKeywords.push(...knownDef.keywords);
+        allSearchKeywords.push(knownDef.label.toLowerCase());
+      }
+
+      // 3. Case-insensitive exact match with headers
+      for (const kw of allSearchKeywords) {
+        const foundKey = rowKeys.find(k => k.trim().toLowerCase() === kw.toLowerCase());
+        if (foundKey && row[foundKey] !== undefined && String(row[foundKey]).trim() !== '') {
+          return String(row[foundKey]).trim();
+        }
+      }
+
+      // 4. Case-insensitive substring match
+      for (const kw of allSearchKeywords) {
+        if (kw.length < 3) continue;
+        const foundKey = rowKeys.find(k => k.trim().toLowerCase().includes(kw.toLowerCase()));
+        if (foundKey && row[foundKey] !== undefined && String(row[foundKey]).trim() !== '') {
+          return String(row[foundKey]).trim();
+        }
+      }
+
       return '';
     };
 
     const id = `RTLH-${String(index + 1).padStart(4, '0')}`;
-    const timestamp = getValue('timestamp') || new Date().toISOString().slice(0, 16).replace('T', ' ');
-    const surveyorName = getValue('surveyorName') || 'Tim Fasilitator Disperkim';
-    const namaKK = getValue('namaKK') || `Warga ${index + 1}`;
-    const rawNik = getValue('nik') || `740201${String(1000000000 + index).slice(1)}`;
-    const nik = rawNik.replace(/[^0-9]/g, '');
-    const noKK = getValue('noKK') || `740201${String(2000000000 + index).slice(1)}`;
-    const pekerjaan = getValue('pekerjaan') || 'Buruh Harian / Tani';
-    const rawGaji = getValue('penghasilanBulanan').replace(/[^0-9]/g, '');
+    const timestamp = getValue('timestamp', ['waktu', 'tanggal', 'date', 'recorded']) || new Date().toISOString().slice(0, 16).replace('T', ' ');
+    const surveyorName = getValue('surveyorName', ['petugas', 'surveyor', 'fasilitator']) || 'Tim Fasilitator Disperkim';
+    
+    // Exact Nama Kepala Keluarga according to Spreadsheet
+    const rawNamaKK = getValue('namaKK', ['nama kepala keluarga', 'nama kk', 'nama lengkap', 'nama penerima', 'nama calon', 'calon penerima', 'nama']);
+    const namaKK = rawNamaKK || `Penerima Usulan ${index + 1}`;
+
+    // NIK & No KK - strip leading apostrophe if exported from excel/sheets
+    const rawNik = getValue('nik', ['nik (ktp)', 'nik', 'nomor induk', 'no ktp', 'ktp']) || `740201${String(1000000000 + index).slice(1)}`;
+    const nik = rawNik.replace(/['"\s]/g, '');
+
+    const rawNoKK = getValue('noKK', ['nomor kk (kartu keluarga)', 'nomor kk', 'no kk', 'kartu keluarga']) || `740201${String(2000000000 + index).slice(1)}`;
+    const noKK = rawNoKK.replace(/['"\s]/g, '');
+
+    const pekerjaan = getValue('pekerjaan', ['profesi', 'mata pencaharian']) || 'Buruh Harian / Tani';
+    const rawGaji = getValue('penghasilanBulanan', ['penghasilan', 'pendapatan', 'gaji']).replace(/[^0-9]/g, '');
     const penghasilanBulanan = rawGaji ? parseInt(rawGaji, 10) : 1200000;
 
-    const kecamatan = getValue('kecamatan') || 'Unaaha';
-    const desaKelurahan = getValue('desaKelurahan') || 'Desa Percontohan';
-    const dusunRtRw = getValue('dusunRtRw') || 'RT 01 / RW 01';
+    // Exact Desa / Kelurahan & Kecamatan according to Spreadsheet
+    const kecamatan = getValue('kecamatan', ['kecamatan', 'wilayah kecamatan', 'distrik']) || 'Unaaha';
+    const desaKelurahan = getValue('desaKelurahan', [
+      'desa / kelurahan', 
+      'desa/kelurahan', 
+      'desa / kel', 
+      'desa/kel', 
+      'kelurahan / desa', 
+      'kelurahan/desa', 
+      'nama desa', 
+      'nama kelurahan', 
+      'desa', 
+      'kelurahan', 
+      'kampung'
+    ]) || 'Desa Percontohan';
+
+    const dusunRtRw = getValue('dusunRtRw', ['alamat lengkap (rt/rw)', 'alamat lengkap', 'rt/rw', 'alamat', 'dusun', 'rt / rw']) || 'RT 01 / RW 01';
 
     // Coordinates
     const coordString = getValue('koordinat');

@@ -2,23 +2,55 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { RTLHEntry, GoogleSheetsConfig } from './types/rtlh';
 import { SAMPLE_KONAWE_RTLH } from './data/sampleKonaweData';
 import { fetchGoogleSheetData, transformRowsToRTLH, exportRTLHToCsv } from './utils/googleSheetsSync';
-import { Header } from './components/Header';
-import { DashboardView } from './components/DashboardView';
+import { Sidebar, NavTab } from './components/Sidebar';
+import { TopNavbar } from './components/TopNavbar';
+import { BerandaView } from './components/BerandaView';
 import { DataTableView } from './components/DataTableView';
+import { DashboardView } from './components/DashboardView';
 import { MapView } from './components/MapView';
+import { AdminView } from './components/AdminView';
 import { VerificationModal } from './components/VerificationModal';
 import { DetailModal } from './components/DetailModal';
 import { GoogleSyncModal } from './components/GoogleSyncModal';
 import { NewEntryModal } from './components/NewEntryModal';
 import { GoogleFormEmbedModal } from './components/GoogleFormEmbedModal';
-import { PortalHomeView } from './components/PortalHomeView';
-import { CheckCircle2, AlertCircle, FileSpreadsheet, RefreshCw } from 'lucide-react';
+import { GuideModal } from './components/GuideModal';
+import { GlobalSearchModal } from './components/GlobalSearchModal';
+import { UserRole } from './utils/privacyMask';
+import { CheckCircle2, AlertCircle } from 'lucide-react';
 
-const STORAGE_KEY_DATA = 'sim_rtlh_konawe_data_v3';
-const STORAGE_KEY_CONFIG = 'sim_rtlh_konawe_config_v3';
+const STORAGE_KEY_DATA = 'sim_rtlh_konawe_data_v4';
+const STORAGE_KEY_CONFIG = 'sim_rtlh_konawe_config_v4';
+const STORAGE_KEY_ROLE = 'sim_rtlh_konawe_user_role_v1';
 
 export default function App() {
-  // Load initial config from localStorage
+  // User role state (Super Admin has full unmasked access; User Publik has masked NIK/KK)
+  const [currentUserRole, setCurrentUserRole] = useState<UserRole>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_ROLE);
+      if (saved === 'User Publik' || saved === 'Super Admin') return saved;
+    } catch {
+      // ignore
+    }
+    return 'Super Admin';
+  });
+
+  const handleRoleChange = (role: UserRole) => {
+    setCurrentUserRole(role);
+    try {
+      localStorage.setItem(STORAGE_KEY_ROLE, role);
+    } catch {
+      // ignore
+    }
+    showToast(
+      role === 'Super Admin' 
+        ? 'Beralih ke mode Super Admin: NIK & No KK ditampilkan lengkap.' 
+        : 'Beralih ke mode User Publik: NIK & No KK disamarkan sesuai UU PDP.', 
+      'success'
+    );
+  };
+
+  // Config state
   const [config, setConfig] = useState<GoogleSheetsConfig>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_CONFIG);
@@ -35,7 +67,7 @@ export default function App() {
     };
   });
 
-  // Load initial dataset
+  // Main dataset
   const [rtlhData, setRtlhData] = useState<RTLHEntry[]>(() => {
     try {
       const saved = localStorage.getItem(STORAGE_KEY_DATA);
@@ -52,12 +84,19 @@ export default function App() {
   });
 
   // Active view tab
-  const [activeTab, setActiveTab] = useState<'portal' | 'dashboard' | 'table' | 'map'>('portal');
+  const [activeTab, setActiveTab] = useState<NavTab>('beranda');
+
+  // Filters passed to DataTableView when navigating from Beranda charts
+  const [tableKecamatanFilter, setTableKecamatanFilter] = useState<string | undefined>(undefined);
+  const [tableStatusFilter, setTableStatusFilter] = useState<string | undefined>(undefined);
 
   // Modals state
   const [isSyncModalOpen, setIsSyncModalOpen] = useState(false);
   const [isNewEntryModalOpen, setIsNewEntryModalOpen] = useState(false);
   const [isFormModalOpen, setIsFormModalOpen] = useState(false);
+  const [isGuideModalOpen, setIsGuideModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [selectedEntryForDetail, setSelectedEntryForDetail] = useState<RTLHEntry | null>(null);
   const [selectedEntryForVerification, setSelectedEntryForVerification] = useState<RTLHEntry | null>(null);
 
@@ -69,6 +108,18 @@ export default function App() {
     setToast({ message, type });
     setTimeout(() => setToast(null), 4000);
   };
+
+  // Keyboard shortcut listener for ⌘K / Ctrl+K
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key === 'k') {
+        e.preventDefault();
+        setIsSearchModalOpen(prev => !prev);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
 
   // Save data to localStorage on changes
   useEffect(() => {
@@ -137,7 +188,9 @@ export default function App() {
       autoSync: false,
       columnMapping: {},
     });
-    showToast('Data dikembalikan ke data simulasi default Kabupaten Konawe.', 'success');
+    setTableKecamatanFilter(undefined);
+    setTableStatusFilter(undefined);
+    showToast('Data dikembalikan ke 24 data simulasi default Kabupaten Konawe.', 'success');
   };
 
   // Add new single entry
@@ -170,7 +223,7 @@ export default function App() {
   const isDemo = !config.sheetUrl;
 
   return (
-    <div className="min-h-screen bg-slate-100 flex flex-col font-sans text-slate-900">
+    <div className="min-h-screen bg-[#f8fafc] flex text-slate-900 font-sans antialiased">
       
       {/* Toast Notification */}
       {toast && (
@@ -184,77 +237,130 @@ export default function App() {
         </div>
       )}
 
-      {/* Main Top Header */}
-      <Header
+      {/* Persistent Left Sidebar */}
+      <Sidebar
         activeTab={activeTab}
-        setActiveTab={setActiveTab}
-        config={config}
-        onOpenSyncModal={() => setIsSyncModalOpen(true)}
-        onOpenNewEntryModal={() => setIsNewEntryModalOpen(true)}
-        onOpenFormModal={() => setIsFormModalOpen(true)}
-        onTriggerSync={handleTriggerSync}
-        isSyncing={isSyncing}
-        totalRecords={rtlhData.length}
-        isDemoData={isDemo}
+        setActiveTab={(tab) => {
+          setActiveTab(tab);
+          if (tab !== 'table') {
+            setTableKecamatanFilter(undefined);
+            setTableStatusFilter(undefined);
+          }
+        }}
+        onOpenGuide={() => setIsGuideModalOpen(true)}
+        isOpenMobile={isMobileSidebarOpen}
+        onCloseMobile={() => setIsMobileSidebarOpen(false)}
       />
 
-      {/* Main Content Area */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
-        {activeTab === 'portal' && (
-          <PortalHomeView
-            data={rtlhData}
-            onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
-            onOpenFormModal={() => setIsFormModalOpen(true)}
-            onNavigateToTable={() => setActiveTab('table')}
-            onNavigateToMap={() => setActiveTab('map')}
-            onNavigateToDashboard={() => setActiveTab('dashboard')}
-          />
-        )}
+      {/* Main Container Area on the right */}
+      <div className="flex-1 flex flex-col min-h-screen lg:pl-64">
+        
+        {/* Top Navbar */}
+        <TopNavbar
+          activeTab={activeTab}
+          setActiveTab={(tab) => {
+            setActiveTab(tab);
+            if (tab !== 'table') {
+              setTableKecamatanFilter(undefined);
+              setTableStatusFilter(undefined);
+            }
+          }}
+          onOpenSearch={() => setIsSearchModalOpen(true)}
+          onOpenSyncModal={() => setIsSyncModalOpen(true)}
+          onOpenNewEntryModal={() => setIsNewEntryModalOpen(true)}
+          onOpenFormModal={() => setIsFormModalOpen(true)}
+          onResetToDemo={handleResetToDemo}
+          onTriggerSync={handleTriggerSync}
+          isSyncing={isSyncing}
+          isDemoData={isDemo}
+          onToggleMobileSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
+          userRole={currentUserRole}
+          onToggleUserRole={handleRoleChange}
+        />
 
-        {activeTab === 'dashboard' && (
-          <DashboardView
-            data={rtlhData}
-            onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
-            onOpenVerification={(entry) => setSelectedEntryForVerification(entry)}
-            onNavigateToTable={() => setActiveTab('table')}
-            onNavigateToMap={() => setActiveTab('map')}
-            onExportCsv={handleExportCsv}
-          />
-        )}
+        {/* Dynamic Page Content */}
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 max-w-[1600px] w-full mx-auto">
+          {activeTab === 'beranda' && (
+            <BerandaView
+              data={rtlhData}
+              onNavigateToTab={(tab) => setActiveTab(tab)}
+              onSelectKecamatanFilter={(kec) => {
+                setTableKecamatanFilter(kec);
+                setActiveTab('table');
+              }}
+              onSelectStatusFilter={(status) => {
+                setTableStatusFilter(status);
+                setActiveTab('table');
+              }}
+              isDemoData={isDemo}
+              onOpenSyncModal={() => setIsSyncModalOpen(true)}
+              onTriggerSync={handleTriggerSync}
+              isSyncing={isSyncing}
+            />
+          )}
 
-        {activeTab === 'table' && (
-          <DataTableView
-            data={rtlhData}
-            onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
-            onOpenVerification={(entry) => setSelectedEntryForVerification(entry)}
-            onDeleteEntry={handleDeleteEntry}
-            onOpenNewEntry={() => setIsNewEntryModalOpen(true)}
-            onExportCsv={handleExportCsv}
-          />
-        )}
+          {activeTab === 'table' && (
+            <DataTableView
+              data={rtlhData}
+              onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
+              onOpenVerification={(entry) => setSelectedEntryForVerification(entry)}
+              onDeleteEntry={handleDeleteEntry}
+              onOpenNewEntry={() => setIsNewEntryModalOpen(true)}
+              onExportCsv={handleExportCsv}
+              initialKecamatan={tableKecamatanFilter}
+              initialStatus={tableStatusFilter}
+              userRole={currentUserRole}
+              onToggleUserRole={handleRoleChange}
+            />
+          )}
 
-        {activeTab === 'map' && (
-          <MapView
-            data={rtlhData}
-            onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
-            onOpenVerification={(entry) => setSelectedEntryForVerification(entry)}
-          />
-        )}
-      </main>
+          {activeTab === 'statistik' && (
+            <DashboardView
+              data={rtlhData}
+              onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
+              onOpenVerification={(entry) => setSelectedEntryForVerification(entry)}
+              onNavigateToTable={() => setActiveTab('table')}
+              onNavigateToMap={() => setActiveTab('map')}
+              onExportCsv={handleExportCsv}
+            />
+          )}
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4 px-4 text-center text-xs text-slate-500 no-print">
-        <div className="max-w-7xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2">
+          {activeTab === 'map' && (
+            <MapView
+              data={rtlhData}
+              onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
+              onOpenVerification={(entry) => setSelectedEntryForVerification(entry)}
+            />
+          )}
+
+          {activeTab === 'admin' && (
+            <AdminView
+              config={config}
+              data={rtlhData}
+              onOpenSyncModal={() => setIsSyncModalOpen(true)}
+              onOpenFormModal={() => setIsFormModalOpen(true)}
+              onOpenNewEntryModal={() => setIsNewEntryModalOpen(true)}
+              onTriggerSync={handleTriggerSync}
+              onResetToDemo={handleResetToDemo}
+              onExportCsv={handleExportCsv}
+              isSyncing={isSyncing}
+            />
+          )}
+        </main>
+
+        {/* Minimal Footer */}
+        <footer className="border-t border-slate-200/80 py-3.5 px-6 sm:px-8 text-xs text-slate-400 flex flex-col sm:flex-row items-center justify-between gap-2 no-print bg-white/50">
           <div>
-            <strong>E-RTLH Kabupaten Konawe</strong> &copy; {new Date().getFullYear()} Bidang Kawasan Permukiman, Dinas Perumahan dan Kawasan Permukiman.
+            <strong>SI-RTLH Kabupaten Konawe</strong> &copy; {new Date().getFullYear()} Dinas Perumahan dan Kawasan Permukiman.
           </div>
-          <div className="text-[11px] text-slate-400 flex items-center space-x-3">
-            <span>Standar KemenPKP (BSPS)</span>
+          <div className="flex items-center space-x-3 text-[11px] text-slate-400">
+            <span>Standar BSPS KemenPKP</span>
             <span>•</span>
-            <span>Terintegrasi Google Form & Spreadsheet</span>
+            <span>Integrasi Google Sheets & Form</span>
           </div>
-        </div>
-      </footer>
+        </footer>
+
+      </div>
 
       {/* MODALS */}
       {selectedEntryForDetail && (
@@ -266,6 +372,7 @@ export default function App() {
             setSelectedEntryForDetail(null);
             setSelectedEntryForVerification(entry);
           }}
+          isSuperAdmin={currentUserRole === 'Super Admin'}
         />
       )}
 
@@ -273,6 +380,7 @@ export default function App() {
         <VerificationModal
           entry={selectedEntryForVerification}
           onClose={() => setSelectedEntryForVerification(null)}
+          isSuperAdmin={currentUserRole === 'Super Admin'}
         />
       )}
 
@@ -298,6 +406,24 @@ export default function App() {
           onUpdateFormUrl={(newUrl) => setConfig(prev => ({ ...prev, formUrl: newUrl }))}
           onTriggerSync={handleTriggerSync}
           onClose={() => setIsFormModalOpen(false)}
+        />
+      )}
+
+      {isGuideModalOpen && (
+        <GuideModal
+          onClose={() => setIsGuideModalOpen(false)}
+          onOpenSyncModal={() => setIsSyncModalOpen(true)}
+          onOpenFormModal={() => setIsFormModalOpen(true)}
+        />
+      )}
+
+      {isSearchModalOpen && (
+        <GlobalSearchModal
+          isOpen={isSearchModalOpen}
+          onClose={() => setIsSearchModalOpen(false)}
+          data={rtlhData}
+          onSelectEntry={(entry) => setSelectedEntryForDetail(entry)}
+          isSuperAdmin={currentUserRole === 'Super Admin'}
         />
       )}
 

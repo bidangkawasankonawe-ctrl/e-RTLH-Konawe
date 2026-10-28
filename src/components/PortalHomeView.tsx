@@ -60,28 +60,28 @@ export const PortalHomeView: React.FC<PortalHomeViewProps> = ({
     <div className="space-y-10">
       
       {/* Hero Banner Section */}
-      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 text-white shadow-2xl border border-emerald-800/40 p-6 sm:p-12">
+      <div className="relative rounded-3xl overflow-hidden bg-gradient-to-br from-[#081E3D] via-[#0C336D] to-[#081E3D] text-white shadow-xl border border-blue-900/50 p-6 sm:p-12">
         <div className="relative z-10 max-w-3xl space-y-4">
-          <div className="inline-flex items-center space-x-2 bg-emerald-500/20 text-emerald-300 px-3.5 py-1.5 rounded-full text-xs font-semibold border border-emerald-500/30">
+          <div className="inline-flex items-center space-x-2 bg-blue-500/20 text-amber-300 px-3.5 py-1.5 rounded-full text-xs font-bold border border-blue-400/30">
             <Building2 className="w-3.5 h-3.5" />
-            <span>Portal Resmi Pemkab Konawe • Dinas Perumahan & Kawasan Permukiman</span>
+            <span>Portal Resmi Pemkab Konawe • Dinas Perumahan &amp; Kawasan Permukiman</span>
           </div>
 
           <h1 className="text-3xl sm:text-5xl font-extrabold tracking-tight text-white leading-tight">
             Sistem Informasi <br/>
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-300">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-300 via-white to-blue-200">
               E-RTLH Kabupaten Konawe
             </span>
           </h1>
 
-          <p className="text-sm sm:text-base text-slate-300 leading-relaxed max-w-2xl">
-            Layanan digital terpadu pendataan, verifikasi faktual lapangan, pemetaan geospasial (GIS), dan transparansi penyaluran bantuan Rumah Tidak Layak Huni (BSPS KemenPKP & APBD) bagi masyarakat berpenghasilan rendah di Kabupaten Konawe.
+          <p className="text-sm sm:text-base text-blue-100/90 leading-relaxed max-w-2xl">
+            Layanan digital terpadu pendataan, verifikasi faktual lapangan, pemetaan geospasial (GIS), dan transparansi penyaluran bantuan Rumah Tidak Layak Huni (BSPS KemenPKP &amp; APBD) bagi masyarakat berpenghasilan rendah di Kabupaten Konawe.
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <button
               onClick={onOpenFormModal}
-              className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-extrabold text-xs sm:text-sm shadow-lg shadow-emerald-500/20 transition"
+              className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-blue-950/40 transition cursor-pointer"
             >
               <ExternalLink className="w-4 h-4" />
               <span>Isi Google Form Survei Usulan</span>
@@ -89,29 +89,29 @@ export const PortalHomeView: React.FC<PortalHomeViewProps> = ({
 
             <button
               onClick={onNavigateToDashboard}
-              className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-slate-800/80 hover:bg-slate-700 text-white font-bold text-xs sm:text-sm border border-slate-700 transition"
+              className="inline-flex items-center space-x-2 px-5 py-3 rounded-xl bg-[#0B254C] hover:bg-[#10376E] text-white font-bold text-xs sm:text-sm border border-blue-700/50 transition cursor-pointer"
             >
               <span>Buka Dashboard Analitik</span>
-              <ArrowRight className="w-4 h-4 text-emerald-400" />
+              <ArrowRight className="w-4 h-4 text-amber-300" />
             </button>
           </div>
         </div>
 
         {/* Floating Quick Stats on Hero */}
-        <div className="mt-8 pt-6 border-t border-slate-800/80 grid grid-cols-2 sm:grid-cols-3 gap-4">
-          <div className="bg-slate-800/50 backdrop-blur-sm p-3.5 rounded-2xl border border-slate-700/60">
-            <div className="text-xs text-slate-400">Total Terdata (BNBA)</div>
-            <div className="text-2xl font-black text-white mt-1 font-mono">{totalUsulan} <span className="text-xs font-normal text-emerald-400">Unit</span></div>
+        <div className="mt-8 pt-6 border-t border-blue-800/60 grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <div className="bg-[#081E3D]/80 backdrop-blur-sm p-3.5 rounded-2xl border border-blue-700/40">
+            <div className="text-xs text-blue-200">Total Terdata (BNBA)</div>
+            <div className="text-2xl font-black text-white mt-1 font-mono">{totalUsulan} <span className="text-xs font-normal text-amber-300">Unit</span></div>
           </div>
 
-          <div className="bg-slate-800/50 backdrop-blur-sm p-3.5 rounded-2xl border border-slate-700/60">
-            <div className="text-xs text-slate-400">Masuk SK / Proses</div>
-            <div className="text-2xl font-black text-purple-400 mt-1 font-mono">{totalMasukSK} <span className="text-xs font-normal text-slate-300">Calon</span></div>
+          <div className="bg-[#081E3D]/80 backdrop-blur-sm p-3.5 rounded-2xl border border-blue-700/40">
+            <div className="text-xs text-blue-200">Masuk SK / Proses</div>
+            <div className="text-2xl font-black text-purple-300 mt-1 font-mono">{totalMasukSK} <span className="text-xs font-normal text-blue-100">Calon</span></div>
           </div>
 
-          <div className="bg-slate-800/50 backdrop-blur-sm p-3.5 rounded-2xl border border-slate-700/60 col-span-2 sm:col-span-1">
-            <div className="text-xs text-slate-400">Realisasi Selesai Dibantu</div>
-            <div className="text-2xl font-black text-emerald-400 mt-1 font-mono">{totalTerbantu} <span className="text-xs font-normal text-slate-300">Unit Layak</span></div>
+          <div className="bg-[#081E3D]/80 backdrop-blur-sm p-3.5 rounded-2xl border border-blue-700/40 col-span-2 sm:col-span-1">
+            <div className="text-xs text-blue-200">Realisasi Selesai Dibantu</div>
+            <div className="text-2xl font-black text-emerald-400 mt-1 font-mono">{totalTerbantu} <span className="text-xs font-normal text-blue-100">Unit Layak</span></div>
           </div>
         </div>
       </div>
@@ -119,11 +119,11 @@ export const PortalHomeView: React.FC<PortalHomeViewProps> = ({
       {/* Feature 1: Cek Status Usulan Mandiri (Pencarian NIK Publik) */}
       <div className="bg-white rounded-3xl p-6 sm:p-8 border border-slate-200 shadow-sm space-y-5">
         <div className="max-w-2xl">
-          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-emerald-700 uppercase tracking-wider mb-1">
+          <div className="inline-flex items-center space-x-1.5 text-xs font-bold text-blue-700 uppercase tracking-wider mb-1">
             <Search className="w-3.5 h-3.5" />
             <span>Layanan Transparansi Publik</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-bold text-slate-900 tracking-tight">
+          <h2 className="text-xl sm:text-2xl font-extrabold text-slate-900 tracking-tight">
             Cek Status Usulan Calon Penerima Bantuan RTLH
           </h2>
           <p className="text-xs sm:text-sm text-slate-500 mt-1">
@@ -139,12 +139,12 @@ export const PortalHomeView: React.FC<PortalHomeViewProps> = ({
               placeholder="Ketik 16 Digit NIK KTP atau Nama Lengkap Calon Penerima..."
               value={nikSearch}
               onChange={(e) => setNikSearch(e.target.value)}
-              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-2xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-emerald-500/20 focus:border-emerald-500 transition"
+              className="w-full pl-11 pr-4 py-3 bg-slate-50 border border-slate-300 rounded-2xl text-xs sm:text-sm focus:bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition"
             />
           </div>
           <button
             type="submit"
-            className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-2xl text-xs sm:text-sm font-bold transition shadow-md shadow-emerald-600/20 flex items-center justify-center gap-2"
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-500 text-white rounded-2xl text-xs sm:text-sm font-bold transition shadow-md shadow-blue-600/20 flex items-center justify-center gap-2 cursor-pointer"
           >
             <span>Cek Status Sekarang</span>
           </button>

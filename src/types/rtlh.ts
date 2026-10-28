@@ -10,6 +10,32 @@ export type StatusBantuan =
 
 export type SumberDana = 'BSPS KemenPKP' | 'DAU APBD Konawe' | 'Baznas' | 'Dana Desa' | 'CSR Perusahaan' | 'Swadaya / Mandiri' | 'Belum Ditentukan';
 
+export type RatingKondisi = 'A' | 'B' | 'C';
+
+export interface StandarPenilaianRTLH {
+  // 1. STRUKTUR
+  fondasi: RatingKondisi;
+  sloof: RatingKondisi;
+  kolom: RatingKondisi;
+  ringBalok: RatingKondisi;
+  rangkaAtap: RatingKondisi;
+
+  // 2. NON-STRUKTUR
+  dinding: RatingKondisi;
+  lantai: RatingKondisi;
+  penutupAtap: RatingKondisi;
+
+  // 3. KESEHATAN & KECUKUPAN LUAS
+  aksesAirMinum: 'A' | 'C';
+  aksesSanitasi: 'A' | 'C';
+  pencahayaan: RatingKondisi;
+  penghawaan: RatingKondisi;
+  kecukupanLuasRuang: 'A' | 'C';
+
+  // 4. STATUS LAHAN
+  statusPenguasaanLahan: RatingKondisi;
+}
+
 export interface KomponenFisik {
   pondasi: string; // e.g. "Batu kali retak parah", "Tidak ada pondasi"
   kolomBalok: string; // "Kayu lapuk", "Retak struktural"
@@ -33,12 +59,20 @@ export interface RTLHEntry {
   namaKK: string;
   nik: string;
   noKK: string;
+  jenisKelamin?: 'L' | 'P' | string;
+  umur?: number;
   pekerjaan: string;
   penghasilanBulanan: number;
+  nilaiUmpUmk?: number;
+  lamaMenghuniTahun?: number;
+  asetRumahLain?: boolean;
+  bersediaKetentuan?: boolean;
   statusKepemilikanRumah: 'Milik Sendiri' | 'Menumpang' | 'Sewa' | 'Tanah Adat / Hibah';
   statusKepemilikanTanah: 'SHM' | 'Surat Keterangan Tanah (SKT)' | 'Bukan Milik Sendiri' | 'Warisan Belum Bagi';
   
   // Lokasi
+  alamatKK?: string;
+  rtRw?: string;
   provinsi: string;
   kabupaten: string;
   kecamatan: string;
@@ -51,6 +85,7 @@ export interface RTLHEntry {
   kondisiFisik: KomponenFisik;
   skorKerusakan: number; // 0 - 100
   tingkatKerusakan: KerusakanLevel;
+  penilaianStandar?: StandarPenilaianRTLH;
   
   // Dokumentasi 4 Sisi (Standar Google Form Disperkim Konawe)
   keteranganFisik?: string;

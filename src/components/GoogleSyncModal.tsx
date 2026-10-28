@@ -151,23 +151,23 @@ export const GoogleSyncModal: React.FC<GoogleSyncModalProps> = ({
       <div className="bg-white rounded-2xl shadow-2xl max-w-3xl w-full border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
         
         {/* Header */}
-        <div className="bg-slate-900 text-white px-6 py-4 flex items-center justify-between">
+        <div className="bg-[#081E3D] text-white px-6 py-4 flex items-center justify-between border-b border-blue-900/60">
           <div className="flex items-center space-x-3">
-            <div className="p-2 rounded-xl bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+            <div className="p-2 rounded-xl bg-blue-500/20 text-amber-300 border border-blue-400/30">
               <FileSpreadsheet className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-bold text-base text-white">
-                Hubungkan Google Spreadsheet & Google Form
+              <h3 className="font-extrabold text-base text-white">
+                Hubungkan Google Spreadsheet &amp; Google Form
               </h3>
-              <p className="text-xs text-slate-400">
+              <p className="text-xs text-blue-200/80">
                 Sinkronisasi otomatis basis data survei RTLH yang telah terisi
               </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 hover:text-white transition"
+            className="p-1.5 rounded-lg bg-blue-900/60 hover:bg-blue-800 text-blue-200 hover:text-white transition cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -177,20 +177,20 @@ export const GoogleSyncModal: React.FC<GoogleSyncModalProps> = ({
         <div className="flex border-b border-slate-200 bg-slate-50 px-6 pt-3 text-xs font-semibold gap-4">
           <button
             onClick={() => setActiveTab('url')}
-            className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition ${
+            className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition cursor-pointer ${
               activeTab === 'url'
-                ? 'border-emerald-600 text-emerald-700 font-bold'
+                ? 'border-blue-700 text-blue-800 font-bold'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
-            <span>1. Link Spreadsheet & Form</span>
+            <span>1. Link Spreadsheet &amp; Form</span>
           </button>
 
           <button
             onClick={() => setActiveTab('mapping')}
-            className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition ${
+            className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition cursor-pointer ${
               activeTab === 'mapping'
-                ? 'border-emerald-600 text-emerald-700 font-bold'
+                ? 'border-blue-700 text-blue-800 font-bold'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -199,9 +199,9 @@ export const GoogleSyncModal: React.FC<GoogleSyncModalProps> = ({
 
           <button
             onClick={() => setActiveTab('upload')}
-            className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition ${
+            className={`pb-2.5 flex items-center gap-1.5 border-b-2 transition cursor-pointer ${
               activeTab === 'upload'
-                ? 'border-emerald-600 text-emerald-700 font-bold'
+                ? 'border-blue-700 text-blue-800 font-bold'
                 : 'border-transparent text-slate-500 hover:text-slate-800'
             }`}
           >
@@ -459,9 +459,9 @@ export const GoogleSyncModal: React.FC<GoogleSyncModalProps> = ({
             <button
               type="button"
               onClick={handleApplyImport}
-              className="px-4 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white font-bold transition shadow-sm"
+              className="px-4 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white font-bold transition shadow-sm cursor-pointer"
             >
-              Simpan & Sinkronkan
+              Simpan &amp; Sinkronkan
             </button>
           </div>
         </div>
