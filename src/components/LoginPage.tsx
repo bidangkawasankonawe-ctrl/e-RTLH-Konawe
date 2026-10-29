@@ -125,13 +125,14 @@ export const LoginPage: React.FC<LoginPageProps> = ({
             </p>
           </div>
 
-          {/* Slogan */}
+          {/* Slogan Dua Baris Proporsional */}
           <div className="pt-1">
             <p 
-              className="text-xs sm:text-sm italic font-medium text-amber-300 tracking-normal"
+              className="text-xs sm:text-[13px] italic font-medium text-amber-300 tracking-wide leading-relaxed"
               style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
             >
-              "Rumah Layak, Hidup Lebih Baik - Untuk Konawe Bersahaja"
+              Rumah Layak, Hidup Lebih Baik<br />
+              <span className="text-amber-200/90">Untuk Konawe Bersahaja.</span>
             </p>
           </div>
         </div>
