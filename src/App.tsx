@@ -9,6 +9,7 @@ import { DataTableView } from './components/DataTableView';
 import { DashboardView } from './components/DashboardView';
 import { MapView } from './components/MapView';
 import { AdminView } from './components/AdminView';
+import { LoginPage } from './components/LoginPage';
 import { VerificationModal } from './components/VerificationModal';
 import { DetailModal } from './components/DetailModal';
 import { GoogleSyncModal } from './components/GoogleSyncModal';
@@ -17,13 +18,154 @@ import { GoogleFormEmbedModal } from './components/GoogleFormEmbedModal';
 import { GuideModal } from './components/GuideModal';
 import { GlobalSearchModal } from './components/GlobalSearchModal';
 import { UserRole } from './utils/privacyMask';
-import { CheckCircle2, AlertCircle } from 'lucide-react';
+import { AdminCredentials, DEFAULT_ADMIN_CREDENTIALS, AdminUser, DEFAULT_ADMIN_USERS } from './types/auth';
+import { CheckCircle2, AlertCircle, Lock } from 'lucide-react';
 
 const STORAGE_KEY_DATA = 'sim_rtlh_konawe_data_v4';
 const STORAGE_KEY_CONFIG = 'sim_rtlh_konawe_config_v4';
 const STORAGE_KEY_ROLE = 'sim_rtlh_konawe_user_role_v1';
+const STORAGE_KEY_AUTH = 'sim_rtlh_auth_session_v1';
+const STORAGE_KEY_CREDS = 'sim_rtlh_admin_credentials_v1';
+const STORAGE_KEY_ADMIN_USERS = 'sim_rtlh_admin_users_v2';
 
 export default function App() {
+  // Authentication session state: renders LoginPage before the main app appears
+  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => {
+    try {
+      return localStorage.getItem(STORAGE_KEY_AUTH) === 'true';
+    } catch {
+      return false;
+    }
+  });
+
+  // Super Admin Credentials state managed directly by Super Admin
+  const [adminCredentials, setAdminCredentials] = useState<AdminCredentials>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_CREDS);
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error('Error loading admin credentials:', e);
+    }
+    return DEFAULT_ADMIN_CREDENTIALS;
+  });
+
+  const handleUpdateCredentials = (newCreds: AdminCredentials) => {
+    setAdminCredentials(newCreds);
+    try {
+      localStorage.setItem(STORAGE_KEY_CREDS, JSON.stringify(newCreds));
+    } catch (e) {
+      console.error('Error saving admin credentials:', e);
+    }
+    showToast('Kredensial Super Admin berhasil diperbarui & disimpan.', 'success');
+  };
+
+  // Registered Admin Users state (Managed by Super Admin)
+  const [adminUsers, setAdminUsers] = useState<AdminUser[]>(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY_ADMIN_USERS);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch (e) {
+      console.error('Error loading admin users:', e);
+    }
+    return DEFAULT_ADMIN_USERS;
+  });
+
+  const handleAddAdminUser = (newUser: AdminUser) => {
+    setAdminUsers(prev => {
+      const updated = [newUser, ...prev];
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN_USERS, JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
+    showToast(`Pengguna baru "${newUser.fullName}" berhasil didaftarkan.`, 'success');
+  };
+
+  const handleToggleAdminUserStatus = (userId: string) => {
+    setAdminUsers(prev => {
+      const updated = prev.map(u => u.id === userId ? { ...u, isActive: !u.isActive } : u);
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN_USERS, JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      const target = updated.find(u => u.id === userId);
+      if (target) {
+        showToast(`Status akun "${target.fullName}" kini: ${target.isActive ? 'Aktif' : 'Nonaktif'}.`, 'success');
+      }
+      return updated;
+    });
+  };
+
+  const handleDeleteAdminUser = (userId: string) => {
+    setAdminUsers(prev => {
+      const target = prev.find(u => u.id === userId);
+      const updated = prev.filter(u => u.id !== userId);
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN_USERS, JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      if (target) {
+        showToast(`Akun "${target.fullName}" telah dihapus.`, 'success');
+      }
+      return updated;
+    });
+  };
+
+  const handleResetAdminUserPassword = (userId: string, newPass: string) => {
+    setAdminUsers(prev => {
+      const updated = prev.map(u => u.id === userId ? { ...u, password: newPass } : u);
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN_USERS, JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      const target = updated.find(u => u.id === userId);
+      if (target) {
+        showToast(`Password untuk "${target.username}" berhasil direset.`, 'success');
+      }
+      return updated;
+    });
+  };
+
+  const handleEditAdminUser = (updatedUser: AdminUser) => {
+    setAdminUsers(prev => {
+      const updated = prev.map(u => u.id === updatedUser.id ? updatedUser : u);
+      try {
+        localStorage.setItem(STORAGE_KEY_ADMIN_USERS, JSON.stringify(updated));
+      } catch (e) {
+        console.error(e);
+      }
+      return updated;
+    });
+
+    // If editing root superadmin, sync with adminCredentials
+    if (updatedUser.id === 'usr-1' || updatedUser.role === 'Super Admin') {
+      const updatedCreds: AdminCredentials = {
+        ...adminCredentials,
+        username: updatedUser.username,
+        password: updatedUser.password,
+        adminName: updatedUser.fullName,
+        email: updatedUser.email,
+        lastUpdated: new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+      };
+      setAdminCredentials(updatedCreds);
+      try {
+        localStorage.setItem(STORAGE_KEY_CREDS, JSON.stringify(updatedCreds));
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    showToast(`Data profil akun "${updatedUser.fullName}" berhasil diperbarui.`, 'success');
+  };
+
   // User role state (Super Admin has full unmasked access; User Publik has masked NIK/KK)
   const [currentUserRole, setCurrentUserRole] = useState<UserRole>(() => {
     try {
@@ -48,6 +190,41 @@ export default function App() {
         : 'Beralih ke mode User Publik: NIK & No KK disamarkan sesuai UU PDP.', 
       'success'
     );
+  };
+
+  const handleLoginSuperAdmin = (user?: AdminUser) => {
+    setCurrentUserRole('Super Admin');
+    setIsAuthenticated(true);
+    try {
+      localStorage.setItem(STORAGE_KEY_AUTH, 'true');
+      localStorage.setItem(STORAGE_KEY_ROLE, 'Super Admin');
+    } catch (e) {
+      console.error(e);
+    }
+    const welcomeName = user ? `${user.fullName} (${user.role})` : 'Super Admin Disperkim Kab. Konawe';
+    showToast(`Selamat datang, ${welcomeName}.`, 'success');
+  };
+
+  const handleLoginPublic = () => {
+    setCurrentUserRole('User Publik');
+    setIsAuthenticated(true);
+    try {
+      localStorage.setItem(STORAGE_KEY_AUTH, 'true');
+      localStorage.setItem(STORAGE_KEY_ROLE, 'User Publik');
+    } catch (e) {
+      console.error(e);
+    }
+    showToast('Masuk sebagai Pengunjung Publik. Data privasi NIK/KK disamarkan.', 'success');
+  };
+
+  const handleLogout = () => {
+    setIsAuthenticated(false);
+    try {
+      localStorage.removeItem(STORAGE_KEY_AUTH);
+    } catch (e) {
+      console.error(e);
+    }
+    showToast('Anda telah keluar dari sesi.', 'success');
   };
 
   // Config state
@@ -222,6 +399,18 @@ export default function App() {
 
   const isDemo = !config.sheetUrl;
 
+  // Render Login Page before entering the main application
+  if (!isAuthenticated) {
+    return (
+      <LoginPage
+        onLoginSuperAdmin={handleLoginSuperAdmin}
+        onLoginPublic={handleLoginPublic}
+        adminCredentials={adminCredentials}
+        adminUsers={adminUsers}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-[#f8fafc] flex text-slate-900 font-sans antialiased">
       
@@ -241,6 +430,10 @@ export default function App() {
       <Sidebar
         activeTab={activeTab}
         setActiveTab={(tab) => {
+          if (tab === 'admin' && currentUserRole !== 'Super Admin') {
+            showToast('Fitur ini hanya untuk Super Admin. Silakan login sebagai Super Admin.', 'error');
+            return;
+          }
           setActiveTab(tab);
           if (tab !== 'table') {
             setTableKecamatanFilter(undefined);
@@ -250,6 +443,9 @@ export default function App() {
         onOpenGuide={() => setIsGuideModalOpen(true)}
         isOpenMobile={isMobileSidebarOpen}
         onCloseMobile={() => setIsMobileSidebarOpen(false)}
+        isSuperAdmin={currentUserRole === 'Super Admin'}
+        onLogout={handleLogout}
+        onRequestAdminLogin={handleLogout}
       />
 
       {/* Main Container Area on the right */}
@@ -259,6 +455,10 @@ export default function App() {
         <TopNavbar
           activeTab={activeTab}
           setActiveTab={(tab) => {
+            if (tab === 'admin' && currentUserRole !== 'Super Admin') {
+              showToast('Fitur ini hanya untuk Super Admin. Silakan login sebagai Super Admin.', 'error');
+              return;
+            }
             setActiveTab(tab);
             if (tab !== 'table') {
               setTableKecamatanFilter(undefined);
@@ -276,6 +476,7 @@ export default function App() {
           onToggleMobileSidebar={() => setIsMobileSidebarOpen(prev => !prev)}
           userRole={currentUserRole}
           onToggleUserRole={handleRoleChange}
+          onLogout={handleLogout}
         />
 
         {/* Dynamic Page Content */}
@@ -333,7 +534,7 @@ export default function App() {
             />
           )}
 
-          {activeTab === 'admin' && (
+          {activeTab === 'admin' && currentUserRole === 'Super Admin' && (
             <AdminView
               config={config}
               data={rtlhData}
@@ -344,7 +545,35 @@ export default function App() {
               onResetToDemo={handleResetToDemo}
               onExportCsv={handleExportCsv}
               isSyncing={isSyncing}
+              adminCredentials={adminCredentials}
+              onUpdateCredentials={handleUpdateCredentials}
+              adminUsers={adminUsers}
+              onAddUser={handleAddAdminUser}
+              onToggleUserStatus={handleToggleAdminUserStatus}
+              onDeleteUser={handleDeleteAdminUser}
+              onResetUserPassword={handleResetAdminUserPassword}
+              onEditUser={handleEditAdminUser}
             />
+          )}
+
+          {activeTab === 'admin' && currentUserRole !== 'Super Admin' && (
+            <div className="bg-white rounded-3xl p-10 text-center max-w-lg mx-auto border border-slate-200 mt-12 shadow-sm space-y-4">
+              <div className="w-14 h-14 bg-red-50 text-red-600 rounded-2xl flex items-center justify-center mx-auto border border-red-100">
+                <Lock className="w-7 h-7" />
+              </div>
+              <h2 className="text-lg font-extrabold text-slate-800">Fitur Khusus Super Admin</h2>
+              <p className="text-xs text-slate-500 leading-relaxed">
+                Halaman Pengelolaan dan Integrasi Sistem E-RTLH hanya dapat diakses oleh akun Super Admin Dinas Perumahan dan Kawasan Permukiman Kab. Konawe.
+              </p>
+              <div className="pt-2">
+                <button
+                  onClick={handleLogout}
+                  className="px-5 py-2.5 rounded-xl text-xs font-bold bg-[#081E3D] hover:bg-blue-900 text-white transition shadow-sm cursor-pointer"
+                >
+                  Keluar &amp; Login Sebagai Super Admin
+                </button>
+              </div>
+            </div>
           )}
         </main>
 

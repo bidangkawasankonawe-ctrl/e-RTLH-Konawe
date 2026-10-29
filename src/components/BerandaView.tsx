@@ -96,53 +96,60 @@ export const BerandaView: React.FC<BerandaViewProps> = ({
   return (
     <div className="space-y-5 pb-8">
       
-      {/* 1. HERO BANNER - PAN ROYAL BLUE WITH SOLAR ACCENT */}
-      <div className="relative rounded-2xl overflow-hidden bg-gradient-to-r from-[#082046] via-[#0C336D] to-[#144A94] text-white shadow-sm p-6 sm:p-8 min-h-[220px] flex items-center justify-between border border-blue-900/40">
+      {/* 1. HERO BANNER - GOTONG ROYONG MEMBANGUN RUMAH LAYAK HUNI */}
+      <div className="relative rounded-2xl sm:rounded-3xl overflow-hidden bg-[#081E3D] text-white shadow-md min-h-[300px] sm:min-h-[340px] lg:min-h-[360px] flex items-center border border-blue-900/50">
         
+        {/* Full Proportional Background Image */}
+        <div className="absolute inset-0 select-none pointer-events-none">
+          <img 
+            src="/assets/aistudio/Background_Gotong_Royong_Membangun_Rumah_Layak_Huni_adcbf580.png" 
+            alt="Gotong Royong Membangun Rumah Layak Huni Kabupaten Konawe" 
+            className="w-full h-full object-cover object-right sm:object-center"
+          />
+          {/* Directional scrim gradient ensuring text readability on the left while keeping the house and workers vivid on the right */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#081E3D] via-[#081E3D]/90 sm:via-[#081E3D]/75 md:via-[#081E3D]/50 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-[#081E3D]/60 via-transparent to-transparent sm:hidden" />
+        </div>
+
         {/* Left Text Content */}
-        <div className="relative z-10 max-w-xl space-y-3">
-          <div className="inline-flex items-center space-x-2 text-amber-300 text-xs font-bold tracking-wider uppercase bg-white/10 px-3 py-1 rounded-full border border-white/15 backdrop-blur-xs">
+        <div className="relative z-10 max-w-xl p-6 sm:p-8 lg:p-10 space-y-3.5">
+          <div className="inline-flex items-center space-x-2 text-amber-300 text-xs font-bold tracking-wider uppercase bg-[#081E3D]/75 px-3 py-1 rounded-full border border-blue-400/30 backdrop-blur-md shadow-xs">
             <span className="w-2 h-2 rounded-full bg-amber-400" />
             <span>SISTEM INFORMASI PERUMAHAN</span>
           </div>
 
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight">
-            Bersama Wujudkan Hunian Layak untuk Semua
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold tracking-tight text-white leading-tight drop-shadow-sm">
+            <span className="block">Rumah Layak, Hidup Lebih Baik</span>
+            <span 
+              className="block mt-1 sm:mt-1.5 text-xl sm:text-2xl lg:text-3xl font-medium italic text-amber-300 drop-shadow-md tracking-normal"
+              style={{ fontFamily: "'Playfair Display', Georgia, serif" }}
+            >
+              Untuk Konawe Bersahaja
+            </span>
           </h1>
 
-          <p className="text-xs sm:text-sm text-blue-100/90 leading-relaxed max-w-lg">
+          <p className="text-xs sm:text-sm text-blue-100/95 leading-relaxed max-w-lg drop-shadow-xs font-medium">
             Data akurat untuk penanganan rumah tidak layak huni yang lebih tepat sasaran di Kabupaten Konawe.
           </p>
 
           <div className="pt-2">
             <button
               onClick={() => onNavigateToTab('table')}
-              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-white text-[#0A2E68] font-bold text-xs sm:text-sm shadow-md hover:bg-blue-50 transition group cursor-pointer"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 rounded-xl bg-blue-600 hover:bg-blue-500 text-white font-bold text-xs sm:text-sm shadow-lg shadow-blue-950/50 transition group cursor-pointer border border-blue-400/40"
             >
               <span>Jelajahi Data BNBA</span>
-              <ArrowRight className="w-4 h-4 text-[#0A2E68] group-hover:translate-x-0.5 transition-transform" />
+              <ArrowRight className="w-4 h-4 text-white group-hover:translate-x-0.5 transition-transform" />
             </button>
           </div>
         </div>
 
-        {/* Right Photographic Background / Asset */}
-        <div className="absolute right-0 top-0 bottom-0 w-1/2 lg:w-3/5 overflow-hidden pointer-events-none select-none">
-          <img 
-            src="/assets/konawe_banner_house.jpg" 
-            alt="Rumah Konawe" 
-            className="w-full h-full object-cover object-center opacity-75"
-          />
-          {/* Gradient blend mask from left */}
-          <div className="absolute inset-0 bg-gradient-to-r from-[#082046] via-[#0C336D]/80 to-transparent" />
-          
-          {/* Watermark in bottom right */}
-          <div className="absolute bottom-4 right-6 text-right z-10">
-            <div className="text-sm font-extrabold tracking-widest text-white/90 uppercase drop-shadow-sm">
-              KONAWE
-            </div>
-            <div className="text-[10px] font-bold tracking-widest text-amber-300/90 uppercase drop-shadow-sm">
-              SULAWESI TENGGARA
-            </div>
+        {/* Watermark in bottom right */}
+        <div className="absolute bottom-3 right-5 text-right z-10 pointer-events-none hidden sm:block">
+          <div className="text-xs font-black tracking-widest text-white uppercase drop-shadow-md">
+            KABUPATEN KONAWE
+          </div>
+          <div className="text-[10px] font-bold tracking-widest text-amber-300 uppercase drop-shadow-md">
+            SULAWESI TENGGARA
           </div>
         </div>
 

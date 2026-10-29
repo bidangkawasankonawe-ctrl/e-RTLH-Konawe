@@ -14,7 +14,8 @@ import {
   ShieldCheck,
   ChevronRight,
   Lock,
-  Unlock
+  Unlock,
+  LogOut
 } from 'lucide-react';
 import { NavTab } from './Sidebar';
 import { UserRole } from '../utils/privacyMask';
@@ -33,6 +34,7 @@ interface TopNavbarProps {
   onToggleMobileSidebar: () => void;
   userRole?: UserRole;
   onToggleUserRole?: (role: UserRole) => void;
+  onLogout?: () => void;
 }
 
 export const TopNavbar: React.FC<TopNavbarProps> = ({
@@ -49,6 +51,7 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
   onToggleMobileSidebar,
   userRole = 'Super Admin',
   onToggleUserRole,
+  onLogout,
 }) => {
   const isSuperAdmin = userRole === 'Super Admin';
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -310,17 +313,30 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
                 </button>
               </div>
 
-              <div className="border-t border-slate-100 pt-1">
+              <div className="border-t border-slate-100 pt-1 space-y-0.5">
                 <button
                   onClick={() => {
                     setIsProfileOpen(false);
                     onResetToDemo();
                   }}
-                  className="w-full text-left px-4 py-2 hover:bg-amber-50 text-amber-800 font-medium flex items-center gap-2"
+                  className="w-full text-left px-4 py-2 hover:bg-amber-50 text-amber-800 font-medium flex items-center gap-2 cursor-pointer"
                 >
                   <ShieldCheck className="w-4 h-4 text-amber-600" />
                   <span>Reset ke Data Demo Kab. Konawe</span>
                 </button>
+
+                {onLogout && (
+                  <button
+                    onClick={() => {
+                      setIsProfileOpen(false);
+                      onLogout();
+                    }}
+                    className="w-full text-left px-4 py-2 hover:bg-red-50 text-red-700 font-semibold flex items-center gap-2 cursor-pointer"
+                  >
+                    <LogOut className="w-4 h-4 text-red-600" />
+                    <span>Keluar ke Halaman Login</span>
+                  </button>
+                )}
               </div>
             </div>
           )}
