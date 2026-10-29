@@ -122,10 +122,7 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
       );
     }
 
-    const displayUrl = url.includes('drive.google.com') 
-      ? (url.length > 32 ? url.substring(0, 32) + '...' : url)
-      : 'https://drive.google.com/open?id=1' + item.nik.slice(-8);
-
+    const displayUrl = url.length > 34 ? url.substring(0, 34) + '...' : url;
     const formattedImg = formatGoogleDriveImageUrl(url);
 
     return (
@@ -402,18 +399,18 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
                   </div>
                 </th>
 
-                {/* 10. Foto Rumah (Tampak Samping Kanan) */}
+                {/* 10. Foto Rumah (Tampak Samping Kiri) */}
                 <th className="border border-[#c88d22] py-2 px-3 min-w-[190px] whitespace-nowrap">
                   <div className="flex items-center justify-between space-x-1.5">
-                    <span>Foto Rumah (Tampak Samping Kanan)</span>
+                    <span>Foto Rumah (Tampak Samping Kiri)</span>
                     <Filter className="w-3 h-3 text-white/90 fill-white flex-shrink-0" />
                   </div>
                 </th>
 
-                {/* 11. Foto Rumah (Tampak Samping Kiri) */}
+                {/* 11. Foto Rumah (Tampak Samping Kanan) */}
                 <th className="border border-[#c88d22] py-2 px-3 min-w-[190px] whitespace-nowrap">
                   <div className="flex items-center justify-between space-x-1.5">
-                    <span>Foto Rumah (Tampak Samping Kiri)</span>
+                    <span>Foto Rumah (Tampak Samping Kanan)</span>
                     <Filter className="w-3 h-3 text-white/90 fill-white flex-shrink-0" />
                   </div>
                 </th>
@@ -562,14 +559,14 @@ export const DataTableView: React.FC<DataTableViewProps> = ({
                         {renderPhotoCell(item.fotoDepan, 'Tampak Depan', 'Foto Tampak Depan', item)}
                       </td>
 
-                      {/* 10. Foto Rumah (Tampak Samping Kanan) */}
-                      <td className="border border-slate-300 py-1.5 px-3">
-                        {renderPhotoCell(item.fotoSampingKanan || item.fotoDepan, 'Samping Kanan', 'Foto Samping Kanan', item)}
-                      </td>
-
-                      {/* 11. Foto Rumah (Tampak Samping Kiri) */}
+                      {/* 10. Foto Rumah (Tampak Samping Kiri) */}
                       <td className="border border-slate-300 py-1.5 px-3">
                         {renderPhotoCell(item.fotoSampingKiri || item.fotoDepan, 'Samping Kiri', 'Foto Samping Kiri', item)}
+                      </td>
+
+                      {/* 11. Foto Rumah (Tampak Samping Kanan) */}
+                      <td className="border border-slate-300 py-1.5 px-3">
+                        {renderPhotoCell(item.fotoSampingKanan || item.fotoDepan, 'Samping Kanan', 'Foto Samping Kanan', item)}
                       </td>
 
                       {/* 12. Foto Rumah (Tampak Belakang) */}

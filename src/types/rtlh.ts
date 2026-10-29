@@ -8,7 +8,16 @@ export type StatusBantuan =
   | 'Bantuan Selesai'
   | 'Ditolak / Tidak Memenuhi Syarat';
 
-export type SumberDana = 'BSPS KemenPKP' | 'DAU APBD Konawe' | 'Baznas' | 'Dana Desa' | 'CSR Perusahaan' | 'Swadaya / Mandiri' | 'Belum Ditentukan';
+export type SumberDana = 
+  | 'BSPS KemenPKP' 
+  | 'APBD Kab. Konawe' 
+  | 'APBD Provinsi' 
+  | 'Baznas' 
+  | 'Dana Desa' 
+  | 'CSR Perusahaan' 
+  | 'Swadaya / Mandiri' 
+  | 'Belum Ditentukan'
+  | 'DAU APBD Konawe';
 
 export type RatingKondisi = 'A' | 'B' | 'C';
 
@@ -68,7 +77,7 @@ export interface RTLHEntry {
   asetRumahLain?: boolean;
   bersediaKetentuan?: boolean;
   statusKepemilikanRumah: 'Milik Sendiri' | 'Menumpang' | 'Sewa' | 'Tanah Adat / Hibah';
-  statusKepemilikanTanah: 'SHM' | 'Surat Keterangan Tanah (SKT)' | 'Bukan Milik Sendiri' | 'Warisan Belum Bagi';
+  statusKepemilikanTanah: 'SHM' | 'Surat Keterangan Tanah (SKT)' | 'Bukan Milik Sendiri' | 'Warisan Belum Bagi' | 'Tanah Adat / Hibah';
   
   // Lokasi
   alamatKK?: string;

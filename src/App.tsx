@@ -251,6 +251,11 @@ export default function App() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed) && parsed.length > 0) {
+          // Refresh to authentic Konawe Disperkim spreadsheet data matching screenshot
+          if (parsed[0]?.namaKK === 'SUKARDI' || !parsed.some(d => d.namaKK === 'IBRAHIM')) {
+            localStorage.setItem(STORAGE_KEY_DATA, JSON.stringify(SAMPLE_KONAWE_RTLH));
+            return SAMPLE_KONAWE_RTLH;
+          }
           return parsed;
         }
       }

@@ -126,7 +126,7 @@ export const NewEntryModal: React.FC<NewEntryModalProps> = ({
       fotoSampingKiri,
       fotoBelakang,
       statusBantuan: liveScore >= 70 ? 'Terverifikasi Lapangan' : 'Usulan Baru',
-      sumberDana: liveScore >= 70 ? 'BSPS KemenPKP' : 'DAU APBD Konawe',
+      sumberDana: liveScore >= 70 ? 'BSPS KemenPKP' : 'APBD Kab. Konawe',
       tahunAnggaran: 2026,
       catatanVerifikator: keteranganFisik,
     };

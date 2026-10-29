@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { RTLHEntry, StatusBantuan, SumberDana, StandarPenilaianRTLH, RatingKondisi, KerusakanLevel } from '../types/rtlh';
 import { maskIdentity } from '../utils/privacyMask';
+import { formatGoogleDriveImageUrl } from '../utils/googleSheetsSync';
 import { 
   DAFTAR_KOMPONEN_STANDAR, 
   KATEGORI_STANDAR, 
@@ -45,7 +46,9 @@ export const DetailModal: React.FC<DetailModalProps> = ({
   if (!entry) return null;
 
   const [statusBantuan, setStatusBantuan] = useState<StatusBantuan>(entry.statusBantuan);
-  const [sumberDana, setSumberDana] = useState<SumberDana>(entry.sumberDana);
+  const [sumberDana, setSumberDana] = useState<SumberDana>(
+    entry.sumberDana === 'DAU APBD Konawe' ? 'APBD Kab. Konawe' : entry.sumberDana
+  );
   const [catatan, setCatatan] = useState(entry.catatanVerifikator || '');
   const [savedAlert, setSavedAlert] = useState(false);
 
@@ -181,7 +184,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
               <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group relative">
                 <img
-                  src={entry.fotoDepan || 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80'}
+                  src={formatGoogleDriveImageUrl(entry.fotoDepan) || entry.fotoDepan || 'https://images.unsplash.com/photo-1518780664697-55e3ad937233?auto=format&fit=crop&w=600&q=80'}
                   alt="Tampak Depan"
                   className="w-full h-32 object-cover group-hover:scale-105 transition duration-200"
                 />
@@ -192,18 +195,7 @@ export const DetailModal: React.FC<DetailModalProps> = ({
 
               <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group relative">
                 <img
-                  src={entry.fotoSampingKanan || entry.fotoDepan || 'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=600&q=80'}
-                  alt="Tampak Samping Kanan"
-                  className="w-full h-32 object-cover group-hover:scale-105 transition duration-200"
-                />
-                <div className="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 text-center font-medium">
-                  Tampak Samping Kanan
-                </div>
-              </div>
-
-              <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group relative">
-                <img
-                  src={entry.fotoSampingKiri || entry.fotoDepan || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'}
+                  src={formatGoogleDriveImageUrl(entry.fotoSampingKiri) || entry.fotoSampingKiri || entry.fotoDepan || 'https://images.unsplash.com/photo-1513694203232-719a280e022f?auto=format&fit=crop&w=600&q=80'}
                   alt="Tampak Samping Kiri"
                   className="w-full h-32 object-cover group-hover:scale-105 transition duration-200"
                 />
@@ -214,7 +206,18 @@ export const DetailModal: React.FC<DetailModalProps> = ({
 
               <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group relative">
                 <img
-                  src={entry.fotoBelakang || entry.fotoDepan || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=600&q=80'}
+                  src={formatGoogleDriveImageUrl(entry.fotoSampingKanan) || entry.fotoSampingKanan || entry.fotoDepan || 'https://images.unsplash.com/photo-1590381105924-c72589b9ef3f?auto=format&fit=crop&w=600&q=80'}
+                  alt="Tampak Samping Kanan"
+                  className="w-full h-32 object-cover group-hover:scale-105 transition duration-200"
+                />
+                <div className="absolute bottom-0 inset-x-0 bg-black/60 backdrop-blur-sm text-white text-[10px] px-2 py-1 text-center font-medium">
+                  Tampak Samping Kanan
+                </div>
+              </div>
+
+              <div className="rounded-xl overflow-hidden border border-slate-200 bg-slate-100 group relative">
+                <img
+                  src={formatGoogleDriveImageUrl(entry.fotoBelakang) || entry.fotoBelakang || entry.fotoDepan || 'https://images.unsplash.com/photo-1541888946425-d0fbb18086f6?auto=format&fit=crop&w=600&q=80'}
                   alt="Tampak Belakang"
                   className="w-full h-32 object-cover group-hover:scale-105 transition duration-200"
                 />
@@ -700,12 +703,13 @@ export const DetailModal: React.FC<DetailModalProps> = ({
               <div>
                 <label className="block text-slate-700 font-medium mb-1">Sumber Alokasi Dana:</label>
                 <select
-                  value={sumberDana}
+                  value={sumberDana === 'DAU APBD Konawe' ? 'APBD Kab. Konawe' : sumberDana}
                   onChange={(e) => setSumberDana(e.target.value as SumberDana)}
-                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold focus:outline-none focus:ring-1 focus:ring-blue-500"
+                  className="w-full bg-slate-50 border border-slate-300 rounded-lg px-2.5 py-1.5 text-xs font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-600 transition-colors shadow-sm hover:border-slate-400 cursor-pointer"
                 >
                   <option value="BSPS KemenPKP">BSPS KemenPKP (Kementerian PKP)</option>
-                  <option value="DAU APBD Konawe">DAU APBD Kab. Konawe</option>
+                  <option value="APBD Kab. Konawe">APBD Kab. Konawe</option>
+                  <option value="APBD Provinsi">APBD Provinsi</option>
                   <option value="Baznas">BAZNAS Konawe</option>
                   <option value="Dana Desa">Dana Desa (Alokasi 8%)</option>
                   <option value="CSR Perusahaan">CSR Perusahaan / Swasta</option>

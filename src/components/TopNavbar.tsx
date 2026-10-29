@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Search, 
   Calendar, 
+  Clock,
   Bell, 
   ChevronDown, 
   Menu, 
@@ -65,12 +66,32 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
     admin: 'Admin',
   };
 
-  // Format Indonesian date (e.g. "28 Oktober 2026")
+  // Waktu & Tanggal Otomatis (Default sistem / client realtime)
+  const [currentDateTime, setCurrentDateTime] = useState<Date>(() => new Date());
+
+  useEffect(() => {
+    // Sinkronisasi waktu otomatis secara realtime
+    const timer = setInterval(() => {
+      setCurrentDateTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Format tanggal Indonesia lengkap (Hari, Tanggal Bulan Tahun)
   const todayFormatted = new Intl.DateTimeFormat('id-ID', {
+    weekday: 'long',
     day: 'numeric',
     month: 'long',
     year: 'numeric'
-  }).format(new Date('2026-10-28T09:00:00'));
+  }).format(currentDateTime);
+
+  // Format jam otomatis (HH:mm:ss)
+  const timeFormatted = new Intl.DateTimeFormat('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  }).format(currentDateTime);
 
   return (
     <header className="bg-white border-b border-slate-200/90 sticky top-0 z-30 px-4 sm:px-8 py-3.5 flex items-center justify-between no-print shadow-xs">
@@ -126,9 +147,19 @@ export const TopNavbar: React.FC<TopNavbarProps> = ({
         </button>
 
         {/* Date Display */}
-        <div className="hidden sm:flex items-center space-x-2 text-xs font-medium text-slate-600 bg-slate-50 border border-slate-200/80 px-3 py-1.5 rounded-xl">
-          <Calendar className="w-3.5 h-3.5 text-slate-400" />
-          <span>{todayFormatted}</span>
+        <div 
+          title="Waktu & Tanggal Otomatis Terkini"
+          className="hidden sm:flex items-center space-x-2.5 text-xs font-medium text-slate-700 bg-slate-50/90 hover:bg-slate-100/80 border border-slate-200/90 px-3 py-1.5 rounded-xl transition shadow-2xs cursor-default select-none"
+        >
+          <div className="flex items-center space-x-1.5 text-blue-600">
+            <Calendar className="w-3.5 h-3.5 text-blue-600" />
+            <span className="font-semibold text-slate-800">{todayFormatted}</span>
+          </div>
+          <span className="text-slate-300">|</span>
+          <div className="flex items-center space-x-1 font-mono text-[11px] font-semibold text-blue-700 bg-blue-50/80 px-2 py-0.5 rounded-md border border-blue-200/60">
+            <Clock className="w-3 h-3 text-blue-500 animate-pulse" />
+            <span>{timeFormatted}</span>
+          </div>
         </div>
 
         {/* Notifications Bell */}

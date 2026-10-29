@@ -9,28 +9,22 @@ export interface ColumnDetection {
 }
 
 export const KNOWN_COLUMN_MAPPINGS: { key: string; label: string; keywords: string[] }[] = [
+  { key: 'namaKK', label: 'Nama KK (Kepala Keluarga)', keywords: ['nama kepala keluarga', 'nama kk', 'nama lengkap', 'nama penerima', 'nama calon', 'calon penerima', 'nama'] },
+  { key: 'dusunRtRw', label: 'RT / RW / Dusun', keywords: ['rt / rw', 'rt/rw', 'rt. / rw', 'rt', 'rw', 'dusun', 'alamat lengkap (rt/rw)', 'alamat lengkap', 'alamat', 'lingkungan', 'jalan'] },
+  { key: 'nik', label: 'NIK (KTP)', keywords: ['nik (ktp)', 'nik', 'nomor induk', 'no ktp', 'ktp', 'nik ktp'] },
+  { key: 'noKK', label: 'Nomor KK (Kartu Keluarga)', keywords: ['nomor kk (kartu keluarga)', 'nomor kk', 'no kk', 'kartu keluarga', 'nomor kartu', 'no. kk'] },
+  { key: 'desaKelurahan', label: 'Desa / Kelurahan', keywords: ['desa / kelurahan', 'desa/kelurahan', 'desa', 'kelurahan', 'kampung', 'desa/kel'] },
+  { key: 'kecamatan', label: 'Kecamatan', keywords: ['kecamatan', 'distrik', 'wilayah'] },
+  { key: 'keteranganFisik', label: 'Keterangan Fisik Kondisi Rumah', keywords: ['keterangan fisik kondisi rumah', 'keterangan fisik', 'kondisi fisik', 'kondisi rumah', 'keterangan', 'deskripsi kerusakan', 'kondisi bangunan'] },
+  { key: 'fotoDepan', label: 'Foto Rumah (Tampak Depan)', keywords: ['foto rumah (tampak depan)', 'tampak depan', 'foto depan', 'foto rumah', 'foto tampak depan', 'depan'] },
+  { key: 'fotoSampingKiri', label: 'Foto Rumah (Tampak Samping Kiri)', keywords: ['foto rumah (tampak samping kiri)', 'tampak samping kiri', 'samping kiri', 'foto samping kiri', 'foto tampak samping kiri', 'foto tampak kiri', 'tampak kiri', 'kiri'] },
+  { key: 'fotoSampingKanan', label: 'Foto Rumah (Tampak Samping Kanan)', keywords: ['foto rumah (tampak samping kanan)', 'tampak samping kanan', 'samping kanan', 'foto samping kanan', 'foto tampak samping kanan', 'foto tampak kanan', 'tampak kanan', 'kanan'] },
+  { key: 'fotoBelakang', label: 'Foto Rumah (Tampak Belakang)', keywords: ['foto rumah (tampak belakang)', 'tampak belakang', 'foto belakang', 'foto tampak belakang', 'belakang'] },
   { key: 'timestamp', label: 'Waktu / Timestamp', keywords: ['timestamp', 'waktu', 'tanggal', 'date', 'recorded'] },
-  { key: 'namaKK', label: 'Nama Kepala Keluarga', keywords: ['nama kepala keluarga', 'nama kk', 'nama lengkap', 'nama penerima', 'nama calon', 'calon penerima', 'nama'] },
-  { key: 'dusunRtRw', label: 'Alamat Lengkap (RT/RW)', keywords: ['alamat lengkap (rt/rw)', 'alamat lengkap', 'rt/rw', 'alamat', 'dusun', 'rt', 'rw', 'lingkungan', 'jalan'] },
-  { key: 'nik', label: 'NIK (KTP)', keywords: ['nik (ktp)', 'nik', 'nomor induk', 'no ktp', 'ktp'] },
-  { key: 'noKK', label: 'Nomor KK (Kartu Keluarga)', keywords: ['nomor kk (kartu keluarga)', 'nomor kk', 'no kk', 'kartu keluarga', 'nomor kartu'] },
-  { key: 'desaKelurahan', label: 'Desa / Kelurahan', keywords: ['desa / kelurahan', 'desa/kelurahan', 'desa', 'kelurahan', 'kampung'] },
-  { key: 'kecamatan', label: 'Kecamatan', keywords: ['kecamatan', 'distrik'] },
-  { key: 'keteranganFisik', label: 'Keterangan Fisik Kondisi Rumah', keywords: ['keterangan fisik kondisi rumah', 'keterangan fisik', 'kondisi fisik', 'kondisi rumah', 'keterangan'] },
-  { key: 'fotoDepan', label: 'Foto Rumah (Tampak Depan)', keywords: ['foto rumah (tampak depan)', 'tampak depan', 'foto depan', 'foto rumah', 'foto tampak depan'] },
-  { key: 'fotoSampingKanan', label: 'Foto Rumah (Tampak Samping Kanan)', keywords: ['foto rumah (tampak samping kanan)', 'tampak samping kanan', 'samping kanan'] },
-  { key: 'fotoSampingKiri', label: 'Foto Rumah (Tampak Samping Kiri)', keywords: ['foto rumah (tampak samping kiri)', 'tampak samping kiri', 'samping kiri'] },
-  { key: 'fotoBelakang', label: 'Foto Rumah (Tampak Belakang)', keywords: ['foto rumah (tampak belakang)', 'tampak belakang', 'foto belakang'] },
   { key: 'surveyorName', label: 'Nama Surveyor / Petugas', keywords: ['surveyor', 'petugas', 'pencatat', 'nama verifikator', 'fasilitator', 'email'] },
   { key: 'pekerjaan', label: 'Pekerjaan', keywords: ['pekerjaan', 'profesi', 'mata pencaharian'] },
   { key: 'penghasilanBulanan', label: 'Penghasilan Bulanan', keywords: ['penghasilan', 'pendapatan', 'gaji', 'upah'] },
   { key: 'koordinat', label: 'Titik Koordinat / GPS', keywords: ['koordinat', 'gps', 'latitude', 'lat/long', 'lat, long', 'titik lokasi', 'map'] },
-  { key: 'atap', label: 'Kondisi Atap', keywords: ['atap', 'kondisi atap', 'bahan penutup atap', 'rangka atap'] },
-  { key: 'dinding', label: 'Kondisi Dinding', keywords: ['dinding', 'kondisi dinding', 'bahan dinding', 'material dinding'] },
-  { key: 'lantai', label: 'Kondisi Lantai', keywords: ['lantai', 'kondisi lantai', 'bahan lantai', 'alas rumah'] },
-  { key: 'pondasi', label: 'Pondasi / Struktur', keywords: ['pondasi', 'tiang', 'struktur', 'kolom', 'balok'] },
-  { key: 'sanitasi', label: 'Sanitasi / Jamban', keywords: ['sanitasi', 'jamban', 'wc', 'kloset', 'mck', 'bab'] },
-  { key: 'air', label: 'Sumber Air Bersih', keywords: ['air', 'air bersih', 'sumber air', 'air minum'] },
   { key: 'tingkatKerusakan', label: 'Tingkat Kerusakan', keywords: ['tingkat kerusakan', 'kategori kerusakan', 'kategori rtlh', 'kelayakan', 'rusak'] },
   { key: 'statusBantuan', label: 'Status Bantuan / Verifikasi', keywords: ['status bantuan', 'status', 'verifikasi', 'tahap bantuan'] },
 ];
@@ -224,6 +218,29 @@ export function autoDetectColumns(headers: string[]): Record<string, string> {
     }
   }
 
+  // Positional fallback for standard Konawe Disperkim spreadsheet structure
+  // Col 0: Nama KK, Col 1: RT/RW, Col 2: NIK, Col 3: No KK, Col 4: Desa, Col 5: Kecamatan,
+  // Col 6: Keterangan, Col 7: Foto Depan, Col 8: Tampak Kiri, Col 9: Tampak Kanan, Col 10: Tampak Belakang
+  const positionalKeys = [
+    'namaKK',
+    'dusunRtRw',
+    'nik',
+    'noKK',
+    'desaKelurahan',
+    'kecamatan',
+    'keteranganFisik',
+    'fotoDepan',
+    'fotoSampingKiri',
+    'fotoSampingKanan',
+    'fotoBelakang'
+  ];
+
+  positionalKeys.forEach((key, idx) => {
+    if (!mapping[key] && headers[idx]) {
+      mapping[key] = headers[idx];
+    }
+  });
+
   return mapping;
 }
 
@@ -360,7 +377,7 @@ export function transformRowsToRTLH(
 
     let sumberDana: SumberDana = 'Belum Ditentukan';
     if (matchedLevel === 'Rusak Berat' || keteranganFisik.toLowerCase().includes('rusak berat')) sumberDana = 'BSPS KemenPKP';
-    else if (matchedLevel === 'Rusak Sedang' || keteranganFisik.toLowerCase().includes('rusak sedang')) sumberDana = 'DAU APBD Konawe';
+    else if (matchedLevel === 'Rusak Sedang' || keteranganFisik.toLowerCase().includes('rusak sedang')) sumberDana = 'APBD Kab. Konawe';
 
     return {
       id,
@@ -472,18 +489,74 @@ export function parseCsvString(csvText: string): {
   rows: Record<string, string>[];
   totalRows: number;
 } {
-  const parsed = Papa.parse<Record<string, string>>(csvText, {
-    header: true,
+  // Parse raw matrix first to detect if row 1 is header or data
+  const rawParsed = Papa.parse<string[]>(csvText, {
+    header: false,
     skipEmptyLines: 'greedy',
-    transformHeader: (h) => h.trim(),
   });
 
-  if (parsed.errors && parsed.errors.length > 0 && parsed.data.length === 0) {
-    throw new Error(`Format CSV tidak valid: ${parsed.errors[0]?.message}`);
+  if (rawParsed.errors && rawParsed.errors.length > 0 && rawParsed.data.length === 0) {
+    throw new Error(`Format CSV tidak valid: ${rawParsed.errors[0]?.message}`);
   }
 
-  const headers = parsed.meta.fields || [];
-  const rows = parsed.data.filter(r => Object.values(r).some(v => String(v).trim().length > 0));
+  const rawRows = rawParsed.data.filter(r => r && r.some(c => String(c).trim().length > 0));
+  if (rawRows.length === 0) {
+    return { headers: [], rows: [], totalRows: 0 };
+  }
+
+  const firstRow = rawRows[0].map(c => String(c || '').trim());
+
+  // Check if first row is actually data (e.g. contains 16-digit NIK/KK, RT/RW pattern, or URL)
+  const isDataRow = firstRow.some(val => 
+    /^\d{15,16}$/.test(val.replace(/['"\s]/g, '')) || 
+    val.startsWith('http://') || 
+    val.startsWith('https://') ||
+    /^rt[\s.]*\d+/i.test(val) ||
+    /^\d{3}\/\d{3}/i.test(val)
+  );
+
+  const standardKonaweHeaders = [
+    'Nama Kepala Keluarga',
+    'Alamat Lengkap (RT/RW)',
+    'NIK (KTP)',
+    'Nomor KK (Kartu Keluarga)',
+    'Desa / Kelurahan',
+    'Kecamatan',
+    'Keterangan Fisik Kondisi Rumah',
+    'Foto Rumah (Tampak Depan)',
+    'Foto Rumah (Tampak Samping Kiri)',
+    'Foto Rumah (Tampak Samping Kanan)',
+    'Foto Rumah (Tampak Belakang)',
+  ];
+
+  if (isDataRow) {
+    // Row 1 is data! Use standard Konawe Disperkim column headers
+    const headers = standardKonaweHeaders.slice(0, Math.max(firstRow.length, standardKonaweHeaders.length));
+    const rows = rawRows.map(r => {
+      const rowObj: Record<string, string> = {};
+      headers.forEach((h, i) => {
+        rowObj[h] = r[i] !== undefined ? String(r[i]).trim() : '';
+      });
+      return rowObj;
+    });
+
+    return {
+      headers,
+      rows,
+      totalRows: rows.length
+    };
+  }
+
+  // Row 1 is actual headers
+  const headers = firstRow;
+  const dataRows = rawRows.slice(1);
+  const rows = dataRows.map(r => {
+    const rowObj: Record<string, string> = {};
+    headers.forEach((h, i) => {
+      rowObj[h] = r[i] !== undefined ? String(r[i]).trim() : '';
+    });
+    return rowObj;
+  });
 
   return {
     headers,
@@ -506,8 +579,8 @@ export function exportRTLHToCsv(data: RTLHEntry[]): void {
     'Kecamatan': item.kecamatan,
     'Keterangan Fisik Kondisi Rumah': item.keteranganFisik || item.catatanVerifikator || `${item.kondisiFisik.atap}, ${item.kondisiFisik.dinding}`,
     'Foto Rumah (Tampak Depan)': item.fotoDepan || '',
-    'Foto Rumah (Tampak Samping Kanan)': item.fotoSampingKanan || item.fotoDepan || '',
     'Foto Rumah (Tampak Samping Kiri)': item.fotoSampingKiri || item.fotoDepan || '',
+    'Foto Rumah (Tampak Samping Kanan)': item.fotoSampingKanan || item.fotoDepan || '',
     'Foto Rumah (Tampak Belakang)': item.fotoBelakang || item.fotoDepan || '',
     'Tingkat Kerusakan': item.tingkatKerusakan,
     'Skor Kerusakan (0-100)': item.skorKerusakan,
